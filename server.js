@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(
   bodyParser.json({
-    limit: '50mb',
+    limit: '20mb',
     type(req) {
       return true;
     },
