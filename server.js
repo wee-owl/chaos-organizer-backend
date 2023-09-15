@@ -19,14 +19,9 @@ app.use((req, res, next) => {
   next();
 });
 
-let messages = [
-  {
-    id: crypto.randomUUID(),
-    author: 'bot',
-    text: 'Привет! Я твой виртуальный помощник. Для выбора запроса введи команду /start.',
-    time: null,
-  },
-];
+let messages = [];
+
+let pin = [];
 
 app.use(async (request, response) => {
   const { method, type, id } = request.query;
@@ -69,6 +64,37 @@ app.use(async (request, response) => {
       const message = messages.find((message) => message.id === id);
       if (message) {
         messages = messages.filter((message) => message.id !== id);
+        response.status(204).end();
+      } else {
+        response
+          .status(404)
+          .send(JSON.stringify({ message: "Not found" }))
+          .end();
+      }
+      break;
+    }
+    case "getPin":
+      response.send(JSON.stringify(pin)).end();
+      break;
+    case "createPin": {
+      try {
+        const createData = request.body;
+        const newPin = {
+          id: createData.id,
+          text: createData.text,
+        };
+        pin = [];
+        pin.push(newPin);
+        response.send(JSON.stringify(newPin)).end();
+      } catch (error) {
+        response.status(500).send(JSON.stringify({ error: error.message }));
+      }
+      break;
+    }
+    case "deletePin": {
+      const message = pin.find((item) => item.id === id);
+      if (message) {
+        pin = pin.filter((item) => item.id !== id);
         response.status(204).end();
       } else {
         response
